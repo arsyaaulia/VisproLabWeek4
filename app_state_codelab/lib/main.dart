@@ -51,7 +51,7 @@ class CounterWidget extends StatelessWidget {
               onPressed: () { 
                 model.decrement(); 
               }, 
-              child: Text('Gantidulu'), 
+              child: Text('Decrement'), 
             ), 
           ], 
         ), 

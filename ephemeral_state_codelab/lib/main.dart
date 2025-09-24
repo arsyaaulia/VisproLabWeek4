@@ -24,13 +24,24 @@ class _CounterWidgetState extends State<CounterWidget> {
         mainAxisAlignment: MainAxisAlignment.center, 
         children: <Widget>[ 
           Text('Counter Value: $_counter'), 
+
           SizedBox(height: 10), 
+
           ElevatedButton( 
             onPressed: () { 
               setState(() { _counter++; }); 
             }, 
             child: Text('Increment'), 
-          ), 
+          ),
+
+          SizedBox(height: 5),
+          ElevatedButton(
+            onPressed: (){
+              setState(() { _counter--;});
+            },
+            child: Text('Decrement'),
+          ),
+
         ], 
       ), 
     ); 
