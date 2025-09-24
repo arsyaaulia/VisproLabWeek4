@@ -1,49 +1,88 @@
-import 'package:flutter/material.dart'; 
+import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:global_state_package/global_state_package.dart';
 
-void main() => runApp(MyEphemeralApp()); 
-class MyEphemeralApp extends StatelessWidget { 
-  @override Widget build(BuildContext context) { 
-    return MaterialApp( 
-      home: Scaffold( 
-        appBar: AppBar(title: Text('Ephemeral State Example')), 
-        body: CounterWidget(), 
-      ), 
-    ); 
-  } 
-} 
+void main() {
+  runApp(
+    ChangeNotifierProvider(
+      create: (context) => GlobalState(),
+      child: const CounterApp(),
+    ),
+  );
+}
 
-class CounterWidget extends StatefulWidget { 
-  @override _CounterWidgetState createState() => _CounterWidgetState(); 
-} 
+class CounterApp extends StatelessWidget {
+  const CounterApp({super.key});
 
-class _CounterWidgetState extends State<CounterWidget> { 
-  int _counter = 0; 
-  @override Widget build(BuildContext context) { 
-    return Center( 
-      child: Column( 
-        mainAxisAlignment: MainAxisAlignment.center, 
-        children: <Widget>[ 
-          Text('Counter Value: $_counter'), 
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      home: Scaffold(
+        appBar: AppBar(
+          title: const Text('Global State Counters'),
+          
+        ),
+        body: Consumer<GlobalState>(
+          builder: (context, globalState, child) {
+            if (globalState.counters.isEmpty){
+              return const Center(
+                child: Text(
+                  'Belum ada Counter. \nTekan tombol +',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(fontSize: 18),
+                ),
+              );
+            }
+            return ListView.builder(
+              itemCount: globalState.counters.length,
+              itemBuilder: (context, index) {
+                final counter = globalState.counters[index];
+                return ListTile(
+                  title: Text(
+                    '${counter.label}: ${counter.value}',
+                    style: TextStyle(color: counter.color),
+                  ),
+                  trailing: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      IconButton(
+                        icon: const Icon(Icons.remove),
+                        onPressed: () {
+                          globalState.decrementCounter(index);
+                        },
+                      ),
+                      IconButton(
+                        icon: const Icon(Icons.add),
+                        onPressed: () {
+                          globalState.incrementCounter(index);
+                        },
+                      ),
+                      IconButton(
+                        icon: const Icon(Icons.delete),
+                        onPressed: () {
+                          globalState.removeCounterAt(index);
+                        },
+                      ),
+                    ],
+                  ),
+                );
+              },
+            );
+          },
+        ),
 
-          SizedBox(height: 10), 
-
-          ElevatedButton( 
-            onPressed: () { 
-              setState(() { _counter++; }); 
-            }, 
-            child: Text('Increment'), 
-          ),
-
-          SizedBox(height: 5),
-          ElevatedButton(
-            onPressed: (){
-              setState(() { _counter--;});
+        floatingActionButton: Center(
+          heightFactor: 1.0,
+          child: FloatingActionButton(
+            onPressed: () {
+              Provider.of<GlobalState>(
+                context, listen: false
+              ). addCounter();
             },
-            child: Text('Decrement'),
+            child: const Icon(Icons.add),
           ),
-
-        ], 
-      ), 
-    ); 
-  } 
+        ),
+      ),
+    );
+  }
 }
